@@ -62,9 +62,9 @@ app.get("/dashboard", (req, res, next) => {
       ORDER BY s.startTime DESC
       LIMIT 15
     `,
-    totalUsers: SELECT COUNT(*) AS total FROM usuarios,
-    avgSession: SELECT ROUND(AVG(duration_seconds)/60, 2) AS avg FROM sesiones,
-    countries: SELECT COUNT(DISTINCT country) AS total FROM usuarios,
+    totalUsers: `SELECT COUNT(*) AS total FROM usuarios;`,
+    avgSession: `SELECT ROUND(AVG(duration_seconds)/60, 2) AS avg FROM sesiones;`,
+    countries: `SELECT COUNT(DISTINCT country) AS total FROM usuarios;`,
     activeToday: `
       SELECT COUNT(*) AS total
       FROM sesiones
@@ -101,7 +101,7 @@ app.get("/dashboard", (req, res, next) => {
       FROM sesiones
       WHERE startTime >= DATE_SUB(CURDATE(), INTERVAL 15 DAY)
       GROUP BY day
-      ORDER BY day ASC
+      ORDER BY day ASC;
     `,
     countriesPie: `
       SELECT country, COUNT(*) AS total
@@ -156,7 +156,7 @@ app.get("/dashboard", (req, res, next) => {
       });
     })
     .catch(({ key, err }) => {
-      console.error(❌ Error al ejecutar consulta [${key}], err);
+      console.error("❌ Error al ejecutar consulta [${key}]", err);
       res.status(500).send("Error en el dashboard");
     });
 });

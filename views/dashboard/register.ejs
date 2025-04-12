@@ -1,0 +1,68 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <button id="themeToggle" class="btn btn-outline-secondary">🌙 Toggle Theme</button>
+</div>
+
+<div class="container py-5" style="max-width: 600px;">
+  <div class="card shadow">
+    <div class="card-body">
+      <h2 class="text-center text-success mb-4">📝 Registro de Usuario</h2>
+
+      <% if (error) { %>
+        <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert-success"><%= success %></div>
+      <% } %>
+
+      <form method="POST" action="/register">
+        <div class="mb-3">
+          <label class="form-label">Nombre de usuario</label>
+          <input type="text" name="username" class="form-control" maxlength="20" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+          <input type="password" name="pass" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Fecha de nacimiento</label>
+          <input type="date" name="birthDate" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Género</label>
+          <select name="gender" class="form-select">
+            <option value="">Seleccionar</option>
+            <option value="male">Masculino</option>
+            <option value="female">Femenino</option>
+            <option value="other">Otro</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">País</label>
+          <input type="text" name="country" class="form-control">
+        </div>
+        <input type="hidden" name="systemLanguage" id="systemLanguage">
+        <input type="hidden" name="platform" id="platform">
+        <input type="hidden" name="operatingSystem" id="operatingSystem">
+        <input type="hidden" name="deviceModel" value="Web Browser">
+        <button type="submit" class="btn btn-success w-100">Registrar</button>
+      </form>
+    </div>
+  </div>
+  <p class="text-center mt-3">¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("systemLanguage").value = navigator.language || "unknown";
+      document.getElementById("platform").value = navigator.platform || "unknown";
+      document.getElementById("operatingSystem").value = navigator.userAgent || "unknown";
+    });
+  </script>
+
+<%- include('../partials/footer') %>
