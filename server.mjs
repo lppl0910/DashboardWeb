@@ -3,6 +3,7 @@ import mysql from "mysql2/promise";
 import cors from "cors";
 import crypto from "crypto";
 import path from "path";
+import session from "express-session";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +14,14 @@ app.use(cors());
 app.use(express.json());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(session({
+    secret: "clave-super-secreta",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+}));
 
 const port = process.env.PORT ?? 8080;
 const ipAddress = process.env.C9_HOSTNAME ?? 'localhost';
@@ -29,7 +37,10 @@ async function getDBConnection() {
     });
 }
 
-// ==================== ✅ LOGIN EXTENDIDO ====================
+// ==================== ✅ DIRECTORIO RAIZ==================
+app.get("/", (req, res) => res.redirect("/login"));
+
+// ==================== ✅ LOGIN EXTENDIDO PARA UNITY====================
 app.post("/loginUser", async (req, res) => {
     const { username, pass } = req.body;
 
@@ -165,7 +176,29 @@ app.post("/saveSession", async (req, res) => {
     }
 });
 
+// ==================== ✅ LOGIN PARA DASHBOARD====================
+
+app.get("/login", (req, res) => {
+  res.render("dashboard/login", { error: null });
+});
+
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  const adminUser = "admin";
+  const adminPass = "admin123";
+
+  if (username === adminUser && password === adminPass) {
+    req.session.authenticated = true;
+    return res.redirect("/dashboard");
+  } else {
+    return res.render("dashboard/login", { error: "Credenciales incorrectas" });
+  }
+});
+
 app.get("/dashboard", async (req, res) => {
+    if (!req.session.authenticated) {
+        return res.redirect("/login");
+    }
     const sql = {
         users: `
             SELECT u.userName, u.country, u.deviceModel, u.platform, s.startTime, s.endTime,
@@ -270,6 +303,11 @@ app.get("/dashboard", async (req, res) => {
         if (connection) await connection.end();
     }
 });
+
+// ======================= LOGOUT =======================
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => res.redirect("/login"));
+})
 
 // Página de recurso no encontrado (estatus 404)
 app.use((req, res) => {
