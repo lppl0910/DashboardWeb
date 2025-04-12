@@ -1,0 +1,23 @@
+🌍 Dashboard corriendo en http://localhost:4000/dashboard
+Error: Failed to lookup view "stats/not_found" in views directory "/home/ubuntu/environment/Unity.1/views"
+    at Function.render (/home/ubuntu/environment/Unity.1/node_modules/express/lib/application.js:562:17)
+    at ServerResponse.render (/home/ubuntu/environment/Unity.1/node_modules/express/lib/response.js:909:7)
+    at /home/ubuntu/environment/Unity.1/panel.js:131:19
+    at Layer.handleRequest (/home/ubuntu/environment/Unity.1/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/home/ubuntu/environment/Unity.1/node_modules/router/index.js:342:13)
+    at /home/ubuntu/environment/Unity.1/node_modules/router/index.js:297:9
+    at processParams (/home/ubuntu/environment/Unity.1/node_modules/router/index.js:582:12)
+    at next (/home/ubuntu/environment/Unity.1/node_modules/router/index.js:291:5)
+    at SendStream.error (/home/ubuntu/environment/Unity.1/node_modules/serve-static/index.js:120:7)
+    at SendStream.emit (node:events:518:28)
+Error: Failed to lookup view "stats/not_found" in views directory "/home/ubuntu/environment/Unity.1/views"
+    at Function.render (/home/ubuntu/environment/Unity.1/node_modules/express/lib/application.js:562:17)
+    at ServerResponse.render (/home/ubuntu/environment/Unity.1/node_modules/express/lib/response.js:909:7)
+    at /home/ubuntu/environment/Unity.1/panel.js:131:19
+    at Layer.handleRequest (/home/ubuntu/environment/Unity.1/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/home/ubuntu/environment/Unity.1/node_modules/router/index.js:342:13)
+    at /home/ubuntu/environment/Unity.1/node_modules/router/index.js:297:9
+    at processParams (/home/ubuntu/environment/Unity.1/node_modules/router/index.js:582:12)
+    at next (/home/ubuntu/environment/Unity.1/node_modules/router/index.js:291:5)
+    at SendStream.error (/home/ubuntu/environment/Unity.1/node_modules/serve-static/index.js:120:7)
+    at SendStream.emit (node:events:518:28)

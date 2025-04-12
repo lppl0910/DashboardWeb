@@ -1,0 +1,122 @@
+:root {
+  --primary: #9327ff;
+  --secondary: #00ffe7;
+  --bg-light: #f8f9fa;
+  --bg-dark: #232323;
+  --text-light: #ffffff;
+  --text-muted: #6c757d;
+}
+
+/* Aplicar fuentes suaves y transición */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: #333;
+  transition: all 0.3s ease-in-out;
+}
+
+.main-container {
+  padding-top: 50px;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h5 {
+  font-size: 1rem;
+  color: var(--primary);
+}
+
+.card p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--secondary);
+}
+
+canvas {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+/* Tabla */
+table {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+table th {
+  background-color: var(--primary);
+  color: white;
+  padding: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+table td {
+  padding: 10px;
+  color: #333;
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Responsive padding */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 20px;
+  }
+
+  .card {
+    margin-bottom: 20px;
+  }
+}
+
+/* Modo oscuro (agregable más adelante) */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode .card {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .table {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+/* Encabezado de la tabla */
+body.dark-mode table th {
+  background-color: #444;
+  color: #ffffff;
+}
+
+body.dark-mode canvas {
+  background-color: #232323;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+body.dark-mode .btn-outline-secondary {
+  color: #e0e0e0;
+  border-color: #888;
+}
+
+body.dark-mode .text-primary,
+body.dark-mode .text-muted {
+  color: #90caf9 !important;
+}
