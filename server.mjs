@@ -20,7 +20,7 @@ app.use(session({
     secret: "clave-super-secreta",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    cookie: { maxAge: 1000 * 60 * 60 * 2 } // 2 horas
 }));
 
 const port = process.env.PORT ?? 8080;
@@ -138,6 +138,39 @@ app.post("/createUser", async (req, res) => {
     }
 });
 
+app.get("/register", (req, res) => {
+    res.render("dashboard/register", { error: null, success: null });
+  });
+
+app.post("/register", async (req, res) => {
+    try {
+      const response = await fetch(`http://${ipAddress}:${port}/createUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req.body)
+      });
+      const result = await response.json();
+
+      if (result.done) {
+        return res.render("dashboard/register", {
+          success: "✅ Usuario creado correctamente. Ya puedes iniciar sesión.",
+          error: null
+        });
+      } else {
+        return res.render("dashboard/register", {
+          error: result.message || "Error al registrar",
+          success: null
+        });
+      }
+    } catch (err) {
+      console.error("❌ Error en registro web:", err);
+      return res.render("dashboard/register", {
+        error: "Error del servidor",
+        success: null
+      });
+    }
+  });
+
 // ==================== ✅ GUARDAR SESIÓN ====================
 app.post("/saveSession", async (req, res) => {
     const { userId, startTime, endTime } = req.body;
@@ -182,16 +215,46 @@ app.get("/login", (req, res) => {
   res.render("dashboard/login", { error: null });
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const adminUser = "admin";
-  const adminPass = "admin123";
+  let connection;
+  try {
+    connection = await getDBConnection();
 
-  if (username === adminUser && password === adminPass) {
+    const [rows] = await connection.execute(
+      `SELECT id, password, userName FROM usuarios WHERE userName = ?`,
+      [username]
+    );
+
+    if (rows.length === 0) {
+      return res.render("dashboard/login", {
+        error: "Usuario no encontrado"
+      });
+    }
+
+    const user = rows[0];
+
+    const inputPasswordHash = crypto.createHash("sha256").update(password).digest("hex");
+
+    if (inputPasswordHash !== user.password) {
+      return res.render("dashboard/login", {
+        error: "Contraseña incorrecta"
+      });
+    }
+
     req.session.authenticated = true;
+    req.session.userId = user.id;
+    req.session.username = user.userName;
+
     return res.redirect("/dashboard");
-  } else {
-    return res.render("dashboard/login", { error: "Credenciales incorrectas" });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.render("dashboard/login", {
+      error: "Error en el servidor"
+    });
+  } finally {
+    if (connection) await connection.end();
   }
 });
 
@@ -215,7 +278,7 @@ app.get("/dashboard", async (req, res) => {
         activeToday: `
             SELECT COUNT(*) AS total
             FROM sesiones
-            WHERE DATE(startTime) = CURDATE()
+            WHERE DATE(startTime) = DATE(CONVERT_TZ(NOW(), '+00:00', '-06:00'));
         `,
         thisWeek: `
             SELECT COUNT(*) AS total
@@ -281,6 +344,7 @@ app.get("/dashboard", async (req, res) => {
         }
 
         res.render("dashboard/index", {
+            username: req.session.username,
             users: results.users,
             totalUsers: results.totalUsers[0]?.total ?? 0,
             avgSession: results.avgSession[0]?.avg ?? 0,

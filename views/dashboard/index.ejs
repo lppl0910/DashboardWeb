@@ -5,9 +5,10 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <h1 class="fw-bold text-primary">📊 Dashboard Overview</h1>
-      <p class="text-muted">Welcome to your CryptoChicks analytics panel</p>
+      <p class="text-muted">Welcome to your CryptoChicks analytics panel, <%= username %></p>
     </div>
     <button id="themeToggle" class="btn btn-outline-secondary">🌙 Toggle Theme</button>
+    <a href="/logout" class="btn btn-outline-danger">🚪 Cerrar sesión</a>
   </div>
 
   <!-- KPIs -->
@@ -19,7 +20,7 @@
       { icon: "👩‍💻", title: "Active Today", val: activeToday, color: "secondary" },
       { icon: "📅", title: "Sessions This Week", val: sessionsThisWeek, color: "primary" },
       { icon: "📱", title: "Top Device", val: topDevice, color: "danger" },
-      { icon: "🌐", title: "Top Language", val: topLanguage, color: "dark" },
+      { icon: "🌐", title: "Top Language", val: topLanguage, color: "success" },
       { icon: "🖥️", title: "Top Platform", val: topPlatform, color: "primary" }
     ] %>
     <% kpi.forEach(k => { %>
@@ -42,7 +43,9 @@
 
   <section class="mb-5">
     <h4 class="text-primary mb-3">🥧 Top Countries</h4>
-    <canvas id="countryPie" height="100"></canvas>
+    <div class="chart-container" style="position: relative; height:80vh; width:100%;">
+      <canvas id="countryPie"></canvas>
+    </div>
   </section>
 
   <section class="mb-5">
@@ -88,6 +91,116 @@
     </div>
   </section>
 </main>
+
+<script>
+  const sessionsByDay = <%- JSON.stringify(sessionsByDay) %>;
+
+  const dayLabels = sessionsByDay.map(d => d.day);
+  const sessionCounts = sessionsByDay.map(d => d.count);
+
+  new Chart(document.getElementById('sessionsChart'), {
+    type: 'line',
+    data: {
+      labels: dayLabels,
+      datasets: [{
+        label: 'Sessions',
+        data: sessionCounts,
+        borderColor: '#9327ff',
+        backgroundColor: 'rgba(147, 39, 255, 0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+
+<script>
+  const countriesPie = <%- JSON.stringify(countriesPie) %>;
+
+  const countryLabels = countriesPie.map(c => c.country);
+  const countryTotals = countriesPie.map(c => c.total);
+
+  new Chart(document.getElementById('countryPie'), {
+    type: 'pie',
+    data: {
+      labels: countryLabels,
+      datasets: [{
+        data: countryTotals,
+        backgroundColor: [
+          '#9327ff', '#00ffe7', '#ffc107', '#dc3545', '#198754',
+          '#6610f2', '#0dcaf0', '#6f42c1', '#fd7e14', '#20c997'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+</script>
+
+<script>
+  const durationHistogram = <%- JSON.stringify(durationHistogram) %>;
+
+  const durationLabels = durationHistogram.map(d => `${d.duration_min} min`);
+  const durationCounts = durationHistogram.map(d => d.count);
+
+  new Chart(document.getElementById('histogramChart'), {
+    type: 'bar',
+    data: {
+      labels: durationLabels,
+      datasets: [{
+        label: 'Sessions',
+        data: durationCounts,
+        backgroundColor: '#00ffe7'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+
+<script>
+  const genderPlatformData = <%- JSON.stringify(genderPlatform) %>;
+
+  const platforms = [...new Set(genderPlatformData.map(d => d.platform))];
+  const genders = [...new Set(genderPlatformData.map(d => d.gender))];
+
+  const datasets = genders.map(gender => {
+    return {
+      label: gender,
+      data: platforms.map(platform =>
+        genderPlatformData.find(d => d.gender === gender && d.platform === platform)?.total || 0
+      ),
+      backgroundColor: gender === 'Female' ? '#9327ff' : gender === 'Male' ? '#ff0000' : '#ffc107'
+    };
+  });
+
+  new Chart(document.getElementById('genderPlatformChart'), {
+    type: 'bar',
+    data: {
+      labels: platforms,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+
   <%- include('../partials/footer') %>
 </body>
 </html>
